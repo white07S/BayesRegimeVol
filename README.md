@@ -29,48 +29,58 @@ This project is intended for quantitative researchers and practitioners interest
 
 ### 1. Model Setup
 
-We consider a discrete-time asset price series \( (S_t)_{t=1}^T \). To model price dynamics under uncertainty and structural changes, we introduce:
+We consider a discrete-time asset price series $$(S_t)_{t=1}^T $$. To model price dynamics under uncertainty and structural changes, we introduce:
 
 1. **Regime Variable** \( R_t \):  
    A latent Markov chain representing market regimes:
-   $$
+   
+$$
    R_t \in \{1,2,\dots,M\}, \quad P(R_t=j \mid R_{t-1}=i) = \Pi_{ij}.
-   $$
+$$
+
    The regime influences the parameters governing the price and volatility evolution.
 
-2. **Stochastic Volatility State** \( v_t \):  
+3. **Stochastic Volatility State** \( v_t \):  
    Let \( v_t > 0 \) denote the latent volatility level at time \( t \). We assume a mean-reverting square-root process (Heston-type):
-   $$
+   
+$$
    v_t = v_{t-1} + \kappa_{v,R_t}(\theta_{v,R_t} - v_{t-1}) + \sigma_{v,R_t}\sqrt{\max(v_{t-1}, 0)}\,\eta_t, \quad \eta_t \sim N(0,1).
-   $$
+$$
 
-3. **Observation Model (Prices)**:
+5. **Observation Model (Prices)**:
    We consider log-returns:
-   $$
+   
+$$
    r_t = \log\left(\frac{S_t}{S_{t-1}}\right).
-   $$
+$$
    In regime \( R_t = i \), we have:
-   $$
+   
+$$
    r_t \mid v_t, R_t=i \sim N(\mu_i, v_t\sigma_{level,i}^2).
-   $$
+$$
+
    Thus:
-   $$
+   
+$$
    \log(S_t) = \log(S_{t-1}) + r_t, \quad r_t \sim N(\mu_i, v_t \sigma_{level,i}^2).
-   $$
+$$
    
    The parameters \( \{\mu_i, \sigma_{level,i}, \kappa_{v,i}, \theta_{v,i}, \sigma_{v,i}\} \) differ across regimes \( i \).
 
 ### 2. Hidden Markov Model (HMM)
 
 The regime process \( (R_t) \) is a first-order Markov chain with transition matrix \( \Pi \). Let:
+
 $$
 \Pi = [\Pi_{ij}]_{i,j=1}^M, \quad \Pi_{ij} = P(R_t=j \mid R_{t-1}=i).
 $$
 
 The joint distribution of \( \{R_t\} \) given \( \Pi \) is:
+
 $$
 p(R_1,\ldots,R_T \mid \Pi) = \pi_{R_1} \prod_{t=2}^T \Pi_{R_{t-1},R_t},
 $$
+
 where \( \pi \) is the initial regime distribution (often stationary).
 
 ### 3. State-Space Formulation
@@ -78,14 +88,16 @@ where \( \pi \) is the initial regime distribution (often stationary).
 Define the continuous latent state \( \mathbf{x}_t = v_t \). The joint model is:
 
 1. **State Transition:**
-   $$
+   
+$$
    v_t \mid v_{t-1}, R_t \sim N\left(v_{t-1} + \kappa_{v,R_t}(\theta_{v,R_t} - v_{t-1}), \sigma_{v,R_t}^2 v_{t-1}\right) \quad \text{(with non-negativity enforced)}
-   $$
+$$
 
 2. **Observation Model:**
-   $$
+
+$$
    \log(S_t) \mid v_t, R_t=i \sim N(\log(S_{t-1}) + \mu_i, v_t \sigma_{level,i}^2).
-   $$
+$$
 
 This is a nonlinear state-space model with discrete switching (HMM). The nonlinearity arises from the volatility dynamics and lognormal price observation.
 
