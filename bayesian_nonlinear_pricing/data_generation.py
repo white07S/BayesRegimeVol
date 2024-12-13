@@ -1,7 +1,7 @@
 import numpy as np
-from model_params import ModelParameters
-from hmm import sample_regime_path
-from statespace import volatility_dynamics, price_dynamics
+from .model_params import ModelParameters
+from .hmm import sample_regime_path
+from .statespace import volatility_dynamics, price_dynamics
 
 def generate_synthetic_data(T=1000, M=2, seed=42):
     np.random.seed(seed)
